@@ -6,17 +6,20 @@ import advSearch, {
   priceFilter,
   clearResults,
 } from "./components/advSearch.js";
+
+let CURRENT_SEARCH = null;
 // Crear una variable contenedora de iphones
 const iphoneContainer = document.querySelector("#iPhones");
 //crear menu desplegable
 const searchComponent = advSearch(products);
 // append el menú al header
-document.querySelector(".header").append(searchComponent);
+// document.querySelector(".header").append(searchComponent);
 //que no se vea el menú
-searchComponent.style.display = "none";
+// searchComponent.style.display = "none";
 const clearPopUp = clearResults();
-document.body.appendChild(clearPopUp);
-clearPopUp.style.display = "none";
+document.querySelector("#navbar").appendChild(clearPopUp);
+// .appendChild(clearPopUp);
+// clearPopUp.style.display = "none";
 
 // Crear tarjeta de iphone
 function createPhoneCard(iphone) {
@@ -29,8 +32,8 @@ function createPhoneCard(iphone) {
   back.classList.add("back");
   const iphoneInfo = document.createElement("p");
 
-  iphoneInfo.textContent = `
-    Name: ${iphone.name}
+  iphoneInfo.innerHTML = `
+    <span class="phone-name">${iphone.name}</span>
     Price: ${iphone.price}
     Stars: ${iphone.stars}
     Reviews: ${iphone.reviews}
@@ -42,6 +45,7 @@ function createPhoneCard(iphone) {
   const front = document.createElement("div");
   front.classList.add("front");
   front.style.backgroundImage = `url(${iphone.image})`;
+  front.appendChild(iphoneInfo);
 
   //poner las caras de las tarjeta como hijos de la tarjeta
   card.appendChild(back);
@@ -74,7 +78,23 @@ function sellerSearch(products, refSeller) {
 function clearAll() {
   document.querySelector(".searchPrice").value = "";
   document.querySelector(".selectMenu").selectedIndex = 0;
+  document.querySelector(".search").value = "";
   renderSearchResults(products);
+}
+//busqueda por estrella
+function starSearch(products, refStars) {
+  const searchResults = products.filter((iphone) => {
+    return iphone.stars === refStars;
+  });
+  return searchResults;
+}
+
+//busqueda por reviews
+function orderByReviewNo(products) {
+  const searchResults = products.sort(
+    (iphone1, iphone2) => iphone2.reviews - iphone1.reviews,
+  );
+  return searchResults;
 }
 
 // generar cartas iphone y asignarles el flip
@@ -109,30 +129,40 @@ document.querySelector(".search").addEventListener("input", () => {
     }
     return false;
   });
+  CURRENT_SEARCH = searchResults;
   renderSearchResults(searchResults);
 });
 
 // Toggle menu de busqueda avanzada
-document.querySelector(".advSearch").addEventListener("mouseover", () => {
-  searchComponent.style.display = "flex";
-  iphoneContainer.classList.add("blurred");
-});
-searchComponent.addEventListener("mouseleave", () => {
-  searchComponent.style.display = "none";
-  iphoneContainer.classList.remove("blurred");
-});
+// document.querySelector(".advSearch").addEventListener("mouseover", () => {
+//   searchComponent.style.display = "flex";
+//   iphoneContainer.classList.add("blurred");
+// });
+// searchComponent.addEventListener("mouseleave", () => {
+//   searchComponent.style.display = "none";
+//   iphoneContainer.classList.remove("blurred");
+// });
 
 // botón de búsqueda por precio
 document.querySelector(".goButton").addEventListener("click", () => {
+  let actualIphones = products;
   let refPrice = parseFloat(document.querySelector(".searchPrice").value);
-  const searchResults = priceSearch(products, refPrice);
+  if (document.querySelector(".selectMenu").selectedIndex != 0) {
+    console.log(CURRENT_SEARCH);
+    actualIphones = CURRENT_SEARCH;
+  }
+  const searchResults = priceSearch(actualIphones, refPrice);
+
   renderSearchResults(searchResults);
-  clearPopUp.style.display = "block";
+  CURRENT_SEARCH = searchResults;
+
+  // clearPopUp.style.display = "block";
 });
 // selección de menú select
 document.querySelector(".selectMenu").addEventListener("change", () => {
   let refSeller = document.querySelector(".selectMenu").value;
   const searchResults = sellerSearch(products, refSeller);
+  CURRENT_SEARCH = searchResults;
   renderSearchResults(searchResults);
   clearPopUp.style.display = "block";
 });
@@ -140,5 +170,5 @@ document.querySelector(".selectMenu").addEventListener("change", () => {
 // botón de borrar busqueda actual
 clearPopUp.addEventListener("click", () => {
   clearAll();
-  clearPopUp.style.display = "none";
+  // clearPopUp.style.display = "none";
 });

@@ -1,11 +1,16 @@
 import "./style.css";
 //Genera un menu desplegable
 function advSearch(iphones) {
-  const menuAdvSearch = document.createElement("div");
-  menuAdvSearch.classList.add("menuAdvSearch");
-  menuAdvSearch.appendChild(sellerFilter(iphones));
-  menuAdvSearch.appendChild(priceFilter());
-  return menuAdvSearch;
+  // const menuAdvSearch = document.createElement("div");
+  // menuAdvSearch.classList.add("menuAdvSearch");
+  //
+  const navbar = document.querySelector("#navbar");
+  let reference = navbar.children[1];
+  navbar.insertBefore(sellerFilter(iphones), reference);
+  reference = navbar.children[2];
+  navbar.insertBefore(priceFilter(iphones), reference);
+
+  // return menuAdvSearch;
 }
 
 // genera un menu select por vendedor
@@ -14,7 +19,7 @@ export function sellerFilter(iphones) {
   const selectMenu = document.createElement("select");
   selectMenu.classList.add("selectMenu");
   const shop = document.createElement("option");
-  shop.textContent = "-seller-";
+  shop.textContent = "---seller---";
   selectMenu.appendChild(shop);
   for (const seller of sellers) {
     const shop = document.createElement("option");

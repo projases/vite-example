@@ -7,7 +7,7 @@ import advSearch, {
   clearResults,
 } from "./components/advSearch.js";
 
-let CURRENT_SEARCH = null;
+let CURRENT_SEARCH = products;
 // Crear una variable contenedora de iphones
 const iphoneContainer = document.querySelector("#iPhones");
 //crear menu desplegable
@@ -79,6 +79,7 @@ function clearAll() {
   document.querySelector(".searchPrice").value = "";
   document.querySelector(".selectMenu").selectedIndex = 0;
   document.querySelector(".search").value = "";
+  CURRENT_SEARCH = products;
   renderSearchResults(products);
 }
 //busqueda por estrella
@@ -160,10 +161,13 @@ document.querySelector(".goButton").addEventListener("click", () => {
 });
 // selección de menú select
 document.querySelector(".selectMenu").addEventListener("change", () => {
-  let refSeller = document.querySelector(".selectMenu").value;
-  const searchResults = sellerSearch(products, refSeller);
+  let refSeller = document.querySelector(".selectMenu");
+  const searchResults = sellerSearch(products, refSeller.value);
   CURRENT_SEARCH = searchResults;
-  renderSearchResults(searchResults);
+  if (refSeller.selectedIndex === 0) {
+    CURRENT_SEARCH = products;
+  }
+  renderSearchResults(CURRENT_SEARCH);
   clearPopUp.style.display = "block";
 });
 
